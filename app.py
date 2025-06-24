@@ -1,9 +1,9 @@
-#webapp 
+# webapp
 
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import io
 
 st.set_page_config(page_title="Power Data Analyzer", layout="wide")
@@ -40,6 +40,7 @@ def filter_summary_data(df):
     filtrert_df = df[df['Power [kW]'] != 0]
     return filtrert_df
 
+
 def plot_power_data(data):
     dato_tids_kolonne = 'Timestamp'
     y_data_kolonne = 'Power [kW]'
@@ -68,25 +69,54 @@ def plot_power_data(data):
     gjennomsnitt_med_tap = np.maximum(gjennomsnitt_med_tap, 0)
     max_med_tap = pivot_table_med_tap.max(axis=1)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig = go.Figure()
+
+    # Punktgraf for hver dag
     for column in pivot_table.columns:
-        ax.plot(pivot_table.index, pivot_table[column], 'o', markersize=2, alpha=0.5)
+        fig.add_trace(go.Scatter(
+            x=pivot_table.index,
+            y=pivot_table[column],
+            mode='markers',
+            name=str(column),
+            marker=dict(size=4),
+            opacity=0.5,
+            showlegend=False,
+            hovertemplate='%{x}<br>%{y:.0f} kW<extra></extra>'
+        ))
 
-    ax.plot(gjennomsnitt_med_tap.index, gjennomsnitt_med_tap.values, label='Average power',
-            color='red', linewidth=2)
-    ax.plot(max_med_tap.index, max_med_tap.values, label='Max Total Power',
-            color='blue', linewidth=2, linestyle='--')
+    # Linje for gjennomsnitt
+    fig.add_trace(go.Scatter(
+        x=gjennomsnitt_med_tap.index,
+        y=gjennomsnitt_med_tap.values,
+        mode='lines',
+        name='Average power',
+        line=dict(width=3, color='red'),
+        hovertemplate='%{x}<br>%{y:.0f} kW<extra></extra>'
+    ))
 
-    ax.set_xlabel('Time of day (hh:mm)')
-    ax.set_ylabel('Power [kW]')
-    ax.set_title('Power with loss over 24h')
-    ax.legend()
-    ax.grid(True)
-    ax.set_xlim('00:00', '23:59')
-    ax.set_ylim(bottom=0)
-    ax.set_xticks(pivot_table.index[::6])
-    ax.set_xticklabels(pivot_table.index[::6], rotation=45)
-    st.pyplot(fig)
+    # Linje for maks
+    fig.add_trace(go.Scatter(
+        x=max_med_tap.index,
+        y=max_med_tap.values,
+        mode='lines',
+        name='Max Total Power',
+        line=dict(width=2, dash='dash', color='blue'),
+        hovertemplate='%{x}<br>%{y:.0f} kW<extra></extra>'
+    ))
+
+    # Oppsett
+    fig.update_layout(
+        title="Power with loss over 24h",
+        xaxis_title="Time of day (hh:mm)",
+        yaxis_title="Power [kW]",
+        xaxis=dict(tickmode='array', tickvals=pivot_table.index[::6], tickangle=45),
+        yaxis=dict(rangemode="tozero", tickformat=".0f"),
+        legend=dict(x=0, y=1),
+        margin=dict(l=40, r=40, t=60, b=80),
+        height=600
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
 # MAIN LOGIKK
 if uploaded_files:
@@ -95,10 +125,10 @@ if uploaded_files:
     if not kombinert_df.empty:
         plot_data_df = rens_data_for_plotting(kombinert_df.copy())
         summary_df = filter_summary_data(kombinert_df.copy())
-        
+
         st.subheader("Plot")
         plot_power_data(plot_data_df)
-        
+
         st.subheader("Last ned sammedragsfil (Summary)")
         towrite = io.BytesIO()
         summary_df.to_excel(towrite, index=False)
@@ -109,6 +139,7 @@ if uploaded_files:
             file_name="Summary.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
         st.subheader("Preview av summary")
         st.dataframe(summary_df.head(30))
     else:
