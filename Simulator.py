@@ -1,63 +1,92 @@
 import streamlit as st
 import random
+import plotly.express as px
+
 
 st.set_page_config(page_title="Elbilvelger", layout="centered")
 st.title("Klikk ➕ for å legge til bil, ➖ for å fjerne")
 
 NUM_SPOTS = 8
 
-# Initier state
+def beregn_effekt(soc: int) -> int:
+    premium = random.random() < 0.08  # 8 % sjanse for premium
+    if soc < 20:
+        return random.randint(200, 300) if premium else random.randint(80, 150)
+    elif soc < 50:
+        return random.randint(150, 200) if premium else random.randint(60, 120)
+    elif soc < 80:
+        return random.randint(80, 150) if premium else random.randint(30, 80)
+    else:
+        return random.randint(30, 60) if premium else random.randint(5, 40)
+
+# Monte Carlo-funksjon
+def simulering_antall_ganger_over_grense(grense_kw: int, n: int = 10000) -> float:
+    tell_over = 0
+    totaler = []
+
+    for _ in range(n):
+        antall_biler = random.randint(1, 8)
+        total_effekt = 0
+        for _ in range(antall_biler):
+            soc = random.randint(10, 90)
+            effekt = beregn_effekt(soc)
+            total_effekt += effekt
+        totaler.append(total_effekt)
+        if total_effekt > grense_kw:
+            tell_over += 1
+
+    sannsynlighet = tell_over / n
+    return sannsynlighet, totaler
+
+
+# Initialiser bil-liste
 if "biler" not in st.session_state:
     st.session_state.biler = [None] * NUM_SPOTS
 
-# Litt stil for emoji og tekst
-st.markdown("""
-    <style>
-    .emoji {
-        font-size: 60px;
-        text-align: center;
-        margin: 0.5em 0;
-    }
-    .info {
-        text-align: center;
-        font-size: 14px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Horisontale kolonner – én per bil
-cols = st.columns(NUM_SPOTS)
+# Rader
+row1 = st.columns(NUM_SPOTS)  # Knapper
+row2 = st.columns(NUM_SPOTS)  # Ikoner
+row3 = st.columns(NUM_SPOTS)  # SoC
+row4 = st.columns(NUM_SPOTS)  # kW
 
 for i in range(NUM_SPOTS):
-    with cols[i]:
-        bil = st.session_state.biler[i]
+    bil = st.session_state.biler[i]
 
-        # Bruk indre kolonner for å sentrere knapp
-        left, center, right = st.columns([1, 2, 1])
-        with center:
-            if bil:
-                if st.button("➖", key=f"remove_{i}"):
-                    st.session_state.biler[i] = None
-                    st.rerun()
-            else:
-                if st.button("➕", key=f"add_{i}"):
-                    st.session_state.biler[i] = {
-                        "SoC": random.randint(10, 90),
-                        "Effekt": random.randint(1, 400)
-                    }
-                    st.rerun()
-
-        # Emoji
-        st.markdown(f"<div class='emoji'>{'🚗' if bil else '⬜'}</div>", unsafe_allow_html=True)
-
-        # Info
+    # Rad 1: Knapper
+    with row1[i]:
         if bil:
-            st.markdown(f"<div class='info'><strong>SoC:</strong> {bil['SoC']}%<br><strong>kW:</strong> {bil['Effekt']}</div>", unsafe_allow_html=True)
+            if st.button("➖", key=f"remove_{i}", use_container_width=True):
+                st.session_state.biler[i] = None
+                st.rerun()
         else:
-            st.markdown("<div class='info'>Ingen bil</div>", unsafe_allow_html=True)
+            if st.button("➕", key=f"add_{i}", use_container_width=True):
+                soc = random.randint(10, 90)
+                effekt = beregn_effekt(soc)
+                st.session_state.biler[i] = {
+                    "SoC": soc,
+                    "Effekt": effekt
+                }
+                st.rerun()
+
+    # Rad 2: Emoji
+    with row2[i]:
+        st.header("🚘" if bil else " ")
+
+    # Rad 3: SoC
+    with row3[i]:
+        if bil:
+            st.write(f"SoC: {bil['SoC']} %")
+        else:
+            st.write("")
+
+    # Rad 4: Effekt
+    with row4[i]:
+        if bil:
+            st.write(f"{bil['Effekt']} kW")
+        else:
+            st.write("")
 
 # Nullstill-knapp
-st.markdown("---")
 if st.button("🔄 Nullstill alle"):
     st.session_state.biler = [None] * NUM_SPOTS
     st.rerun()
