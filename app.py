@@ -6,9 +6,9 @@ import numpy as np
 import plotly.graph_objects as go
 import io
 
-st.set_page_config(page_title="Power Data Analyzer", layout="wide")
+st.set_page_config(page_title="ESC Dashboard", layout="wide")
 
-st.title("Power Data Analyzer")
+st.title("ESC Dashboard")
 st.write("Last opp flere Excel-filer, og få ut plott og summerte data!")
 
 # 1. Filopplasting
