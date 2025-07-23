@@ -3,7 +3,3 @@ plotly
 pandas
 numpy
 openpyxl
-plotly.express
-plotly.graph_objects
-random
-io
