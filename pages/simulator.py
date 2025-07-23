@@ -96,20 +96,18 @@ st.markdown("---") #linje
 
 #Total output på bilene
 total_kw_output = sum(bil["Effekt"] for bil in st.session_state.biler if bil)
-st.header(f"⚡ Total output-effekt: {total_kw_output} kW")
+st.header(f"Total output-effekt: {total_kw_output} kW")
 
 # Velg energitap
 virkningsgrad = st.slider("Velg virkningsgrad (effektivitet)", min_value=0.80, max_value=1.00, value=0.8648, step=0.0001)
 # Beregn input
 total_kw_input = int(total_kw_output / virkningsgrad)
 # Vis resultatene
-st.header(f"🔌 Total input-effekt: {total_kw_input} kW")
+st.header(f"Total input-effekt: {total_kw_input} kW")
 
 st.markdown("---") #linje
 
-st.markdown("---") #linje
-
-st.subheader("🧪 Monte Carlo-simulering av samtidighet")
+st.subheader("Monte Carlo-simulering av samtidighet")
 
 grense = st.number_input("Grense for total effekt (kW)", value=800, step=50)
 antall_simuleringer = st.number_input("Antall simuleringer", value=10000, step=1000)
