@@ -14,7 +14,7 @@ st.markdown("""Her finnes verktøy relatert til oppgave Recharge ESC team utfør
 col1,col2,col3 = st.columns(3)
 
 with col1:
-    st.link_button("Link 1","plotting.utilization.py", use_container_width=True)
+    st.link_button("Link 1","https://emc-dashboard.streamlit.app/~/+/plotting_utilization", use_container_width=True)
 with col2:
     st.button("Link 2", use_container_width=True)
 with col3:
