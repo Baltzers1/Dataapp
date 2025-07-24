@@ -3,14 +3,16 @@ import streamlit as st
 
 st.set_page_config(page_title="ESC Dashboard", layout="wide")
 
-st.title("ESC Dashboard")
-st.markdown("""Her finnes verktøy relatert til oppgave Recharge ESC team utfører""")
+st.markdown(
+    "<h1 style='text-align: center; margin-bottom: 10px;'> ESC-Dashboard</h1>",
+    unsafe_allow_html=True
+)
 
-col1,col2,col3 = st.columns(3)
+st.markdown(
+    "<p style='text-align: center; font-size:18px; margin-top: 10px;'>"
+    "Here you'll find practical tools and simulations related to the work of the Recharge ESC team."
+    "</p>",
+    unsafe_allow_html=True
+)
 
-with col1:
-    st.link_button("Data plotting kW","https://emc-dashboard.streamlit.app/~/+/plotting_utilization", use_container_width=True)
-with col2:
-    st.button("Link 2", use_container_width=True)
-with col3:
-    st.button("Link 3", use_container_width=True)
+
