@@ -6,16 +6,32 @@ import streamlit as st
 # import plotly.graph_objects as go
 import io
 
-st.set_page_config(page_title="ESC Dashboard", layout="wide")
 
-st.title("ESC Dashboard")
-st.markdown("""Her finnes verktøy relatert til oppgave Recharge ESC team utfører""")
+# Page Setup
+home_page = st.Page(
+    page="pages/home.py",
+    title="Home page",
+    default=True,
+)
+calc_page = st.Page(
+    page="pages/amps_kva.py",
+    title="Amps to kVA Calculator",
+)
+plot_page = st.Page(
+    page="pages/plotting_utilization.py",
+    title="Peak kW Plotting",
+)
+batt_page = st.Page(
+    page="pages/battery_heatmap.py",
+    title="Battery Sizing Heatmap",
+)
+sim_page = st.Page(
+    page="pages/simulator.py",
+    title="EV Charging Simulator",
+)
 
-col1,col2,col3 = st.columns(3)
 
-with col1:
-    st.link_button("Link 1","https://emc-dashboard.streamlit.app/~/+/plotting_utilization", use_container_width=True)
-with col2:
-    st.button("Link 2", use_container_width=True)
-with col3:
-    st.button("Link 3", use_container_width=True)
+#Sidebar def
+pg = st.navigation(pages=[home_page,calc_page,plot_page,batt_page,sim_page])
+#Run sidebar
+pg.run()
