@@ -4,7 +4,7 @@ import plotly.express as px
 
 
 st.set_page_config(page_title="Elbilvelger", layout="centered")
-st.title("Klikk ➕ for å legge til bil, ➖ for å fjerne")
+st.title("Klikk + for å legge til bil, - for å fjerne")
 
 NUM_SPOTS = 8
 
@@ -55,11 +55,11 @@ for i in range(NUM_SPOTS):
     # Rad 1: Knapper
     with row1[i]:
         if bil:
-            if st.button("➖", key=f"remove_{i}", use_container_width=True):
+            if st.button("-", key=f"remove_{i}", use_container_width=True):
                 st.session_state.biler[i] = None
                 st.rerun()
         else:
-            if st.button("➕", key=f"add_{i}", use_container_width=True):
+            if st.button("+", key=f"add_{i}", use_container_width=True):
                 soc = random.randint(10, 90)
                 effekt = beregn_effekt(soc)
                 st.session_state.biler[i] = {
