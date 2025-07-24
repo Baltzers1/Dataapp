@@ -5,20 +5,20 @@ import tempfile
 from analysis import run_analysis
 
 st.set_page_config(page_title="Batterisimulering – Peak Shaving", )
-st.title("🔋 Batterisystem Simulering for Peak Shaving")
+st.title("BESS Simulator for Peak Shaving")
 
 # === Inputvalg ===
-st.header("1. Last opp Excel-filer")
-uploaded_files = st.file_uploader("Velg én eller flere .xlsx-filer", type="xlsx", accept_multiple_files=True)
+st.header("1. Upload Excel-files")
+uploaded_files = st.file_uploader("Chose one or more .xlsx-files", type="xlsx", accept_multiple_files=True)
 
-st.header("2. Konfigurer simulering")
-profile = st.selectbox("Velg profil", ["Small", "Medium", "Large"], index=1)
-peak_fraction = st.slider("Velg peak-fraction (%)", min_value=10, max_value=100, value=60, step=5) / 100.0
-manual_peak = st.number_input("Evt. manuell peak-grense (kW)", min_value=0.0, value=0.0, step=10.0)
-save_figs = st.checkbox("Lagre figurer (SoC + Heatmap)?", value=True)
+st.header("2. Configure the simulation")
+profile = st.selectbox("Chose profile", ["Small", "Medium", "Large"], index=1)
+peak_fraction = st.slider("Chose peak-fractor (%)", min_value=10, max_value=100, value=60, step=5) / 100.0
+manual_peak = st.number_input("OPTIONAL: Input peak-limit (kW)", min_value=0.0, value=0.0, step=10.0)
+save_figs = st.checkbox("Save the SoC + Heatmap figures?", value=True)
 
-if st.button("🚀 Start simulering") and uploaded_files:
-    with st.spinner("Simulerer..."):
+if st.button("🏃🏾‍♀️‍➡️ Run simulation") and uploaded_files:
+    with st.spinner("Simulating..."):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             # Lagre filer midlertidig
@@ -26,7 +26,7 @@ if st.button("🚀 Start simulering") and uploaded_files:
                 with open(os.path.join(temp_dir, file.name), "wb") as f:
                     f.write(file.getbuffer())
 
-            output_path = os.path.join(temp_dir, "simuleringsresultat.xlsx")
+            output_path = os.path.join(temp_dir, "simresults.xlsx")
 
             try:
                 result = run_analysis(
@@ -38,15 +38,15 @@ if st.button("🚀 Start simulering") and uploaded_files:
                     manual_peak_kW=manual_peak if manual_peak > 0 else None
                 )
 
-                st.success("Simuleringen er fullført ✅")
+                st.success("Simulation is completed ✅")
 
                 # === Resultatvisning ===
-                st.subheader("📊 Resultater")
-                st.markdown(f"**Maks målt effekt:** {result['max_peak_kW']} kW")
-                st.markdown(f"**Brukt peak-grense:** {result['used_peak_limit_kW']} kW")
+                st.subheader("📊 Results")
+                st.markdown(f"**Max measured effect:** {result['max_peak_kW']} kW")
+                st.markdown(f"**Peak-limit:** {result['used_peak_limit_kW']} kW")
 
                 if result['optimal_config']:
-                    st.markdown("**Optimal løsning:**")
+                    st.markdown("**Optimal solution:**")
                     st.json(result['optimal_config'])
 
                     if save_figs:
@@ -62,14 +62,14 @@ if st.button("🚀 Start simulering") and uploaded_files:
                 # === Last ned Excel-resultater ===
                 with open(output_path, "rb") as f:
                     st.download_button(
-                        label="📥 Last ned resultatfil (Excel)",
+                        label="📥 Extract results (Excel)",
                         data=f,
                         file_name="simuleringsresultat.xlsx",
                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     )
 
             except Exception as e:
-                st.error(f"Noe gikk galt under simuleringen: {e}")
+                st.error(f"An unexpected error occured: {e}")
 
 else:
-    st.info("Last opp minst én fil og trykk på 'Start simulering' for å kjøre.")
+    st.info("Upload at least on file and hit the 'Run simulation' button to start.")

@@ -117,12 +117,12 @@ if st.button("🔁 Kjør simulering", key="mc_knapp"):
     st.success(f"Sannsynlighet for å overstige {grense} kW: **{sannsynlighet:.2%}**")
 
     # Lag interaktivt histogram med Plotly
-fig = px.histogram(totaler, nbins=30, title="📊 Fordeling av total effekt (kW)")
-fig.update_layout(
-    xaxis_title="Total effekt (kW)",
-    yaxis_title="Antall simuleringer",
-    bargap=0.05
-)
+    fig = px.histogram(totaler, nbins=30, title="📊 Fordeling av total effekt (kW)")
+    fig.update_layout(
+        xaxis_title="Total effekt (kW)",
+        yaxis_title="Antall simuleringer",
+        bargap=0.05
+        )
 
-# Vis i Streamlit
-st.plotly_chart(fig, use_container_width=True)
+    # Vis i Streamlit
+    st.plotly_chart(fig, use_container_width=True)
