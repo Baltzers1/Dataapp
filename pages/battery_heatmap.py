@@ -2,11 +2,9 @@
 import streamlit as st
 import os
 import tempfile
-import shutil
-import pandas as pd
 from analysis import run_analysis
 
-st.set_page_config(page_title="Batterisimulering – Peak Shaving", layout="wide")
+st.set_page_config(page_title="Batterisimulering – Peak Shaving", )
 st.title("🔋 Batterisystem Simulering for Peak Shaving")
 
 # === Inputvalg ===

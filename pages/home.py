@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-st.set_page_config(page_title="ESC Dashboard", layout="wide")
+st.set_page_config(page_title="ESC Dashboard", )
 
 st.markdown(
     "<h1 style='text-align: center; margin-bottom: 10px;'> ESC-Dashboard</h1>",
