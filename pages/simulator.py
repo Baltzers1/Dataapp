@@ -2,12 +2,13 @@ import streamlit as st
 import random
 import plotly.express as px
 
+st.title("EV Charging Simulator")
+st.header("Click + at add a car, - to remove car")
+st.write("")
 
-st.set_page_config(page_title="Elbilvelger", layout="centered")
-st.title("Klikk + for å legge til bil, - for å fjerne")
+NUM_SPOTS = 8   
 
-NUM_SPOTS = 8
-
+#bergner effekten som skal til ut i fra en tilfeldig SoC som bilen får. 
 def beregn_effekt(soc: int) -> int:
     premium = random.random() < 0.08  # 8 % sjanse for premium
     if soc < 20:
@@ -87,7 +88,7 @@ for i in range(NUM_SPOTS):
             st.write("")
 
 # Nullstill-knapp
-if st.button("🔄 Nullstill alle"):
+if st.button("🔄 Reset all"):
     st.session_state.biler = [None] * NUM_SPOTS
     st.rerun()
 
@@ -96,31 +97,34 @@ st.markdown("---") #linje
 
 #Total output på bilene
 total_kw_output = sum(bil["Effekt"] for bil in st.session_state.biler if bil)
-st.header(f"Total output-effekt: {total_kw_output} kW")
+st.header(f"Total output-power: {total_kw_output} kW")
 
 # Velg energitap
-virkningsgrad = st.slider("Velg virkningsgrad (effektivitet)", min_value=0.80, max_value=1.00, value=0.8648, step=0.0001)
+virkningsgrad = st.slider("Select power factor (efficiency)", min_value=0.80, max_value=1.00, value=0.8648, step=0.0001)
 # Beregn input
 total_kw_input = int(total_kw_output / virkningsgrad)
 # Vis resultatene
-st.header(f"Total input-effekt: {total_kw_input} kW")
+st.header(f"Total input-power: {total_kw_input} kW")
 
+st.write("")
 st.markdown("---") #linje
+st.write("")
 
-st.subheader("Monte Carlo-simulering av samtidighet")
+st.title("Monte Carlo Simulation of Simultaneous Load Demand")
+st.write("")
 
-grense = st.number_input("Grense for total effekt (kW)", value=800, step=50)
-antall_simuleringer = st.number_input("Antall simuleringer", value=10000, step=1000)
+grense = st.number_input("Total power capasity (kW)", value=800, step=50)
+antall_simuleringer = st.number_input("Number of simulations", value=10000, step=1000)
 
-if st.button("🔁 Kjør simulering", key="mc_knapp"):
+if st.button("🏃‍♂️‍➡️ Run simulation", key="mc_knapp"):
     sannsynlighet, totaler = simulering_antall_ganger_over_grense(grense_kw=grense, n=antall_simuleringer)
-    st.success(f"Sannsynlighet for å overstige {grense} kW: **{sannsynlighet:.2%}**")
+    st.success(f"Probability of exceeding capacity {grense} kW: **{sannsynlighet:.2%}**")
 
     # Lag interaktivt histogram med Plotly
     fig = px.histogram(totaler, nbins=30, title="📊 Fordeling av total effekt (kW)")
     fig.update_layout(
-        xaxis_title="Total effekt (kW)",
-        yaxis_title="Antall simuleringer",
+        xaxis_title="Total power (kW)",
+        yaxis_title="Number of simulations",
         bargap=0.05
         )
 
