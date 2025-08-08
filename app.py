@@ -1,4 +1,4 @@
-# webapp 
+po# webapp 
 
 import streamlit as st
 import io
@@ -16,9 +16,9 @@ calc_page = st.Page(
     title="Amps to kVA Calculator",
     icon=":material/calculate:",
 )
-plot_page = st.Page(
+kemp_page = st.Page(
     page="pages/plotting_utilization.py",
-    title="Peak kW Plotting",
+    title="Kempower Peak kW",
      icon=":material/bolt:",
 )
 batt_page = st.Page(
@@ -31,9 +31,13 @@ sim_page = st.Page(
     title="EV Charging Simulator",
     icon=":material/electric_car:",
 )
-
+hyc_page = st.Page(
+    page="pages/hyc.py",
+    title="Alpitronic Data Plotting"
+    icon:"material/graf"
+)
 
 #Sidebar def
-pg = st.navigation(pages=[home_page,plot_page,batt_page,calc_page,sim_page])
+pg = st.navigation(pages=[home_page,kemp_page,hyc_page,batt_page,calc_page,sim_page])
 #Run sidebar
 pg.run()
