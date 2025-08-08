@@ -33,8 +33,8 @@ sim_page = st.Page(
 )
 hyc_page = st.Page(
     page="pages/hyc.py",
-    title="Alpitronic Data Plotting"
-    icon:"material/graf"
+    title="Alpitronic Data Plotting",
+    icon:"material/graf",
 )
 
 #Sidebar def
